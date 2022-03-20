@@ -62,12 +62,3 @@
     left: 0px;
   }
 }
-
-@media (max-width: 400px) {
-  .introducao {
-    grid-template-columns: 1fr;
-  }
-  .introducao img {
-    display: none;
-  }
-}

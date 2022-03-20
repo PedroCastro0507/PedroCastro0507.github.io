@@ -82,4 +82,26 @@
   .habilidades-texto {
     font-size: 1rem;
   }
+
+  .empresa-texto {
+    margin: 10px 0px;
+  }
+
+  .empresa-info {
+    grid-column: 1 / -1;
+  }
+
+  .empresa-info span {
+    display: none;
+  }
+
+  .empresa-lista {
+    grid-column: 1 / -1;
+  }
+
+  .empresa-lista::before {
+    content: "Experiências";
+    display: block;
+    margin: 10px 0px;
+  }
 }

@@ -1,8 +1,3 @@
-.logo {
-  font-size: 3rem;
-  font-weight: bold;
-}
-
 .header {
   max-width: 1200px;
   padding: 40px 20px;
@@ -12,7 +7,10 @@
   align-items: center;
 }
 
-.logo {
+.header::before {
+  content: "Pedro";
+  font-size: 3rem;
+  font-weight: bold;
   max-width: 150px;
 }
 

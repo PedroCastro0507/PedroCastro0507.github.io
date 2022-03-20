@@ -143,6 +143,10 @@
     gap: 40px;
   }
 
+  .faculdade {
+    margin: 0px;
+  }
+
   .formacao-extra h3::before {
     position: initial;
     margin-bottom: 10px;
