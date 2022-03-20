@@ -53,9 +53,15 @@
     grid-template-columns: 1fr 1fr;
     gap: 40px;
   }
+
   .introducao h1 {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
+
+  .introducao p {
+    font-size: 1.125rem;
+  }
+
   .introducao h1::before {
     width: 30px;
     height: 10px;
