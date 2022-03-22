@@ -3,18 +3,12 @@
 }
 
 .habilidades-texto {
-  font-size: 1.5rem;
-  line-height: 1.33;
+  font-size: 1.25rem;
+  line-height: 1.4;
   max-width: 60ch;
   align-items: center;
   color: #525252;
   margin-bottom: 60px;
-}
-
-.habilidades-texto {
-  font-size: 1.25rem;
-  line-height: 1.4;
-  color: #525252;
 }
 
 .habilidades-texto strong {
@@ -53,6 +47,7 @@
   font-size: 0.875rem;
   line-height: 1.4;
   color: #525252;
+  padding-top: 10px;
 }
 
 .minhas-habilidades {
@@ -60,6 +55,7 @@
   flex-wrap: wrap;
   gap: 10px;
   align-content: start;
+  padding-top: 10px;
 }
 
 .minhas-habilidades li {
@@ -97,11 +93,5 @@
 
   .empresa-lista {
     grid-column: 1 / -1;
-  }
-
-  .empresa-lista::before {
-    content: "Experiências";
-    display: block;
-    margin: 10px 0px;
   }
 }
