@@ -1,128 +1,104 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./css/style.min.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Desenvolvedor Full Stack Localizado em Curitiba, Paraná">
-  <link rel="shortcut icon" href="img/icone.ico" type="image/x-icon">
-  <title>Pedro Castro - Meu Portfólio</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pedro Castro | DevOps / SRE</title>
+<meta name="description" content="DevOps / SRE engineer working with Kubernetes, Terraform, CI/CD and observability. Based in Curitiba, Brazil.">
+<style>
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#9da7b3;--accent:#58a6ff;--green:#3fb950}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header{padding:56px 0 24px}
+h1{margin:0;font-size:clamp(2rem,5vw,2.8rem);line-height:1.15}
+.role{color:var(--green);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:8px 0 0}
+.term{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:24px 0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92rem;color:var(--muted);overflow-x:auto}
+.term b{color:var(--text);font-weight:600}
+.term .p{color:var(--green)}
+section{padding:28px 0;border-top:1px solid var(--border)}
+h2{margin:0 0 14px;font-size:1.25rem}
+ul{margin:0;padding-left:20px}
+li{margin:6px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:0;list-style:none}
+.chips li{margin:0;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:4px 12px;font-size:.88rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{display:block;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;color:var(--text)}
+.card:hover{border-color:var(--accent);text-decoration:none}
+.card h3{margin:0 0 6px;font-size:1rem;color:var(--accent)}
+.card p{margin:0;color:var(--muted);font-size:.92rem}
+.links{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+.btn{border:1px solid var(--border);border-radius:8px;padding:8px 16px;background:var(--card);color:var(--text)}
+.btn:hover{border-color:var(--accent);text-decoration:none}
+footer{padding:28px 0 56px;color:var(--muted);font-size:.9rem;border-top:1px solid var(--border)}
+</style>
 </head>
-
 <body>
-  <!-- #region Inicio do Cabecalho -->
-  <header class="header">
-    <nav>
-      <ul class="header-menu">
-        <li><a href="#habilidades">Habilidades</a></li>
-        <li><a href="#formacao">Formação</a></li>
-        <li><a href="#contato">Contato</a></li>
-        <li><a href="espanol.html"><img src="img/espanha.png" alt=""></a></li>
-        <li><a href="english.html"><img src="img/estados-unidos.png" alt=""></a></li>
-      </ul>
-    </nav>
-  </header>
-  <!-- #endregion Fim do Cabecalho -->
-  <!-- #region Inicio da Introducao -->
-  <main class="container introducao">
-    <!-- <img class="minha-foto" src="./img/minha_foto.jpg" alt="Minha Foto" height="460px" width="260px"> -->
-    <div>
-      <h1>Desenvolvedor <br> Full Stack</h1>
-      <p>Localizado em Curitiba, Paraná</p>
-    </div>
-  </main>
-  <!-- #endregion Fim da Introducao -->
-  <!-- #region Inicio da Habilidades -->
-  <section class="container habilidades" id="habilidades" aria-label="Habilidades">
-    <h2 class="subtitulo">habilidades</h2>
-    <div>
-      <p class="habilidades-texto">Desenvolvi pequenos projetos com o uso de <strong>HTML, CSS, JavaScript, Phyton, C# (Sharp)</strong> e <strong>C</strong>, também pussuo nivel de experiência em Banco de Dados como <strong>SQL</strong>, possuindo muitos trabalhos e projetos feito na faculdade e cursos on-line. Tenho alguns dos meus projetos na plataforma <strong>GitHub</strong> e <strong>LinkedIn</strong>. Pretendo cada dia poder evoluir com as linguagens de programação.</p>
+<div class="wrap">
+<header>
+<h1>Pedro Castro</h1>
+<p class="role">DevOps / SRE &middot; Curitiba, Brazil</p>
+<div class="term">
+<div><span class="p">$</span> <b>whoami</b></div>
+<div>pedro &mdash; DevOps / SRE, independent contractor</div>
+<div><span class="p">$</span> <b>cat focus.txt</b></div>
+<div>reliability &middot; automation &middot; scalability &middot; infrastructure as code</div>
+</div>
+<div class="links">
+<a class="btn" href="https://github.com/PedroCastro0507">GitHub</a>
+<a class="btn" href="https://www.linkedin.com/in/pedro-henrique-serrato-de-castro/">LinkedIn</a>
+</div>
+</header>
 
-      <div class="empresa">
-        <h3 class="empresa-titulo">Empresa</h3>
-        <span class="empresa-titulo">Experiências / Conhecimentos</span>
-        <p class="empresa-texto">Esse é meu primeiro ano em busca de um emprego, então nunca trabalhei nem possuo experiência de trabalho, mas sempre procuro dar meu máximo em tudo com que eu faço, estou sempre focado em aprender coisas novas na área.</p>
-        <ul class="minhas-habilidades">
-          <li>HTML</li>
-          <li>CSS</li>
-          <li>JavaScript</li>
-          <li>Phyton</li>
-          <li>C#</li>
-          <li>SQL</li>
-          <li>C</li>
-          <li>GitHub</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-  <!-- #endregion Inicio da Habilidades -->
-  <!-- #region Inicio da Formação -->
-  <section class="formacao" id="formacao" aria-label="Formação">
-    <div class="formacao-container">
-      <h2 class="subtitulo">Formação</h2>
-      <div>
-        <p class="formacao-texto">Atualmente estou no meu terceiro período da faculdade no curso <strong>Bacharel Ciência da Computação</strong> e com alguns cursos finalizados <strong>Front End & Back End</strong>. Além disso sempre me mantenho atualizado com cursos intensivos online.</p>
-        <ul class="faculdade-lista">
-          <li class="faculdade">
-            <span class="faculdade-tipo">Bacharel</span>
-            <h3 class="faculdade-curso">Ciência da Computação</h3>
-            <span class="faculdade-instituicao">PUCPR</span>
-          </li>
-          <li class="faculdade">
-            <span class="faculdade-tipo">Curso</span>
-            <h3 class="faculdade-curso">Front End</h3>
-            <span class="faculdade-instituicao">Origamid</span>
-          </li>
-          <li class="faculdade">
-            <span class="faculdade-tipo">Curso</span>
-            <h3 class="faculdade-curso">Back End</h3>
-            <span class="faculdade-instituicao">Udemy</span>
-          </li>
-        </ul>
-        <div class="formacao-extra">
-          <div class="cursos">
-            <h3>Cursos Intensivos</h3>
-            <ul>
-              <li>Front End para Iniciantes <span>72h</span></li>
-              <li>Algoritmos e Lógica de Programação <span>30h</span></li>
-              <li>C# COMPLETO Programação Orientada a Objetos <span>40h</span></li>
-              <li>Alura <span>cursando</span></li>
-            </ul>
-          </div>
-          <div class="idiomas">
-            <h3>Idiomas</h3>
-            <ul>
-              <li>Português / <span>nativo</span></li>
-              <li>Inglês / <span>intermediário</span></li>
-              <li>Espanhol / <span>intermediário</span></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- #endregion Fim da Formação -->
-  <!-- #region Inicio do Rodapé -->
-  <footer class="footer" id="contato">
-    <div class="footer-container">
-      <p class="footer-texto">Estou disponível para novos projetos no momento. Entre em contato comigo e marcamos uma conversa.</p>
-      <div class="footer-contato">
-        <ul>
-          <li>+55 41 99231-9296</li>
-          <li>draocastro@gmail.com</li>
-          <li><a href="https://github.com/PedroCastro0507">GitHub: PedroCastro0507</a></li>
-          <li><a href="https://www.linkedin.com/in/pedro-castro-250620214/">LinkedIn: Pedro Castro</a></li>
-        </ul>
-      </div>
-      <p class="footer-copy">Pedro. Alguns direitos reservados.</p>
-    </div>
-  </footer>
-  <!-- #endregion Fim do Rodapé -->
+<section>
+<h2>About</h2>
+<p>I am a DevOps engineer focused on the reliability, automation and scalability of systems. I work with Infrastructure as Code, CI/CD pipelines, Kubernetes and observability across cloud and on-premises environments. I currently work independently on confidential projects, and I am extending my DevOps foundation towards MLOps and AI platforms.</p>
+</section>
 
-  <script src="script.js"></script>
+<section>
+<h2>What I do</h2>
+<ul>
+<li><b>Kubernetes and GitOps:</b> K8s/RKE2 clusters (K3s migration), Rancher, ArgoCD, memory tuning and Secrets management.</li>
+<li><b>CI/CD:</b> pipelines with Jenkins, GitHub Actions, Azure Pipelines, Nexus, GitHub and Bitbucket.</li>
+<li><b>Infrastructure as Code and automation:</b> Terraform, Ansible, Bash and Python.</li>
+<li><b>Observability:</b> Prometheus, Grafana, Graylog, Datadog and CloudWatch.</li>
+<li><b>Hybrid environments:</b> AWS and on-premises (VMware, Proxmox, HAProxy, Nginx, Ingress-Nginx).</li>
+</ul>
+</section>
+
+<section>
+<h2>Stack</h2>
+<ul class="chips">
+<li>AWS</li><li>Azure</li><li>GCP</li><li>Oracle Cloud</li><li>Kubernetes</li><li>Docker</li><li>ArgoCD</li><li>Terraform</li><li>Ansible</li><li>Jenkins</li><li>GitHub Actions</li><li>Prometheus</li><li>Grafana</li><li>Linux</li><li>Python</li><li>Bash</li><li>C#</li>
+</ul>
+</section>
+
+<section>
+<h2>Projects</h2>
+<p>Open projects that reproduce, without any client data, what I do day to day.</p>
+<div class="grid">
+<a class="card" href="https://github.com/PedroCastro0507/terraform-aws-network-baseline"><h3>terraform-aws-network-baseline</h3><p>Reusable Terraform module for an AWS VPC baseline, validated by CI.</p></a>
+<a class="card" href="https://github.com/PedroCastro0507/gitops-argocd-demo"><h3>gitops-argocd-demo</h3><p>Kustomize overlays deployed by ArgoCD, with manifest validation in CI.</p></a>
+<a class="card" href="https://github.com/PedroCastro0507/DevOps"><h3>DevOps</h3><p>Node.js API with a GitHub Actions pipeline, smoke tests and a Docker image build.</p></a>
+</div>
+</section>
+
+<section>
+<h2>Certifications</h2>
+<ul>
+<li>Oracle Cloud Infrastructure Foundations Associate (2025)</li>
+<li>Datadog Fundamentals</li>
+</ul>
+</section>
+
+<section>
+<h2>Contact</h2>
+<p>The best way to reach me is through <a href="https://www.linkedin.com/in/pedro-henrique-serrato-de-castro/">LinkedIn</a>. My code lives on <a href="https://github.com/PedroCastro0507">GitHub</a>.</p>
+</section>
+
+<footer>&copy; Pedro Castro. Open to talk about DevOps, SRE and AI platforms.</footer>
+</div>
 </body>
-
 </html>
