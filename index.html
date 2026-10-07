@@ -160,8 +160,16 @@ p.lead{color:var(--dim);margin:14px 0 0;font-size:16.5px}
 @media(max-width:760px){.console{height:104px}.panel{background:rgba(4,6,16,.6)}}
 @media(max-width:560px){.dash-top{grid-template-columns:1fr}.ascii{justify-self:center}}
 
-footer{padding-block:24px calc(30px + env(safe-area-inset-bottom,0px));font-family:var(--f-mono);font-size:12px;color:var(--dim);border-top:1px solid var(--line);background:rgba(3,4,10,.9)}
+footer{padding-block:24px calc(30px + env(safe-area-inset-bottom,0px));font-family:var(--f-mono);font-size:12px;color:var(--dim);border-top:0;background:linear-gradient(180deg,rgba(3,4,10,0),rgba(3,4,10,.85))}
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hterm{position:absolute;right:max(24px,5vw);bottom:64px;width:min(400px,36vw);z-index:3;font-family:var(--f-mono);background:rgba(2,3,10,.78);backdrop-filter:blur(10px);border:1px solid var(--line);box-shadow:0 0 60px rgba(94,242,255,.08)}
+.hterm .tb{display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.hterm .tb i{width:9px;height:9px;border-radius:50%;background:#ff6b57}.hterm .tb i:nth-child(2){background:#2a3050}.hterm .tb i:nth-child(3){background:#2a3050}
+.hterm .tb em{margin-left:auto;font-style:normal}
+.hterm pre{margin:0;padding:12px 14px;font:12.5px/1.7 var(--f-mono);color:#b5c0de;min-height:178px;white-space:pre;overflow:hidden}
+.hterm .p{color:var(--cyan)}.hterm .g{color:var(--ok)}.hterm .y{color:#ffc857}.hterm .d{color:var(--dim)}
+#c0{position:relative}
+@media(max-width:980px){.hterm{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}.panel{transform:none}}
 </style>
 </head>
@@ -192,7 +200,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
       <a class="btn" href="https://www.linkedin.com/in/pedro-henrique-serrato-de-castro/" target="_blank" rel="noopener">LinkedIn ↗</a>
     </div>
     <div class="hint"><i></i>Scroll to assemble</div>
-  </div></div></section>
+  </div></div>
+  <div class="hterm" aria-hidden="true"><div class="tb"><i></i><i></i><i></i><em>Simulated · cluster/prod</em></div><pre id="term"></pre></div>
+  </section>
 
   <section class="ch r" id="c1"><div class="wrap"><div class="panel">
     <div class="kicker">01 · Frame</div>
@@ -593,6 +603,20 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
       });
     }
     if('IntersectionObserver' in window){var o=new IntersectionObserver(function(es){if(es[0].isIntersecting){light();o.disconnect()}},{threshold:.2});o.observe(document.getElementById('dash'))}else light();
+  })();
+
+  /* ---------- hero terminal (simulated) ---------- */
+  (function(){
+    var term=document.getElementById('term');if(!term)return;
+    var L=['<span class="p">$</span> kubectl get nodes','NAME      STATUS     ROLES           VERSION','cp-1      <span class="y">NotReady</span>   control-plane   rke2','wk-1      <span class="y">NotReady</span>   worker          rke2','<span class="d">… joining cluster</span>','__SET__','<span class="p">$</span> argocd app sync web-prod','<span class="g">✔</span> synced · health: <span class="g">Healthy</span>','<span class="p">$</span> _'];
+    function run(){var out=[],i=0;function paint(){term.innerHTML=out.join('\n')}
+      (function step(){
+        if(i>=L.length){setTimeout(run,6000);return}
+        var l=L[i++];
+        if(l==='__SET__'){out[2]=out[2].replace('NotReady','<span class="g">Ready   </span>');out[3]=out[3].replace('NotReady','<span class="g">Ready   </span>');out.splice(4,1);paint();setTimeout(step,reduce?0:700);return}
+        out.push(l);paint();setTimeout(step,reduce?0:(i===1?900:620));
+      })();}
+    run();
   })();
 
   /* ---------- pipeline ---------- */
