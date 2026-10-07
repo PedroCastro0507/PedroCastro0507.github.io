@@ -2,6 +2,634 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Pedro Castro, DevOps / SRE based in Curitiba, Brazil. Kubernetes, GitOps, Terraform, CI/CD and observability.">
+<meta name="theme-color" content="#03040a">
+<title>Pedro Castro | DevOps / SRE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one rocket, built and flown by scrolling. A fixed WebGL scene holds the rocket; seven chapters scroll over it.
+   Chapter value c (0..6) is derived from scroll and drives everything: parts assemble (c 0.2 to 3.3), pad and planet appear (c 3 to 4),
+   ignition (c 4.3), ascent with booster separation (c 4.35 to 6), orbit (c 6). Text panels alternate sides; the camera shifts so the rocket sits opposite the panel. */
+:root{
+  --void:#03040a;
+  --ink:#eaf0ff;
+  --dim:#8d98bb;
+  --line:rgba(130,170,255,.2);
+  --cyan:#5ef2ff;
+  --uv:#9a6bff;
+  --ignite:#ff7a3d;
+  --ok:#5ff0b0;
+  --f-display:"Unbounded","Arial Black",sans-serif;
+  --f-body:"Instrument Sans",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--void);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;overflow-x:hidden}
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+main,header.top,footer{position:relative;z-index:2}
+a{color:inherit}
+.wrap{max-width:1180px;margin-inline:auto;padding-inline:20px;width:100%}
+:focus-visible{outline:2px solid var(--ignite);outline-offset:3px}
+
+header.top{position:fixed;left:0;right:0;top:0;z-index:6;padding-top:env(safe-area-inset-top,0px);background:linear-gradient(to bottom,rgba(3,4,10,.85),rgba(3,4,10,0))}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px}
+.brand{font-family:var(--f-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;display:flex;align-items:center;gap:10px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 12px var(--ok);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.3;transform:scale(.7)}}
+nav{display:flex;gap:22px;font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+nav a{text-decoration:none;color:var(--dim);position:relative;padding-block:4px;transition:color .2s}
+nav a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1px;background:var(--cyan);transition:right .3s}
+nav a:hover,nav a.on{color:var(--ink)}nav a:hover::after,nav a.on::after{right:0}
+@media(max-width:760px){nav{display:none}}
+#prog{position:fixed;left:0;top:0;height:2px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--cyan),var(--uv),var(--ignite));z-index:9}
+
+/* HUD */
+.hud{position:fixed;z-index:5;left:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));font-family:var(--f-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line);background:rgba(4,6,16,.7);backdrop-filter:blur(10px);padding:10px 14px;display:grid;grid-template-columns:auto auto;gap:3px 18px;min-width:230px}
+.hud b{font-weight:400;color:var(--dim)}
+.hud span{font-variant-numeric:tabular-nums;text-align:right}
+.hud .st{grid-column:1/-1;color:var(--ignite);font-size:12px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.hud .st::before{content:"";width:7px;height:7px;background:var(--ignite);border-radius:50%;box-shadow:0 0 10px var(--ignite)}
+@media(max-width:760px){.hud{left:12px;right:auto;bottom:auto;top:56px;min-width:0;font-size:10px;padding:7px 10px}.hud .hide-m{display:none}}
+
+/* chapters */
+.ch{min-height:100vh;display:flex;align-items:center;padding-block:96px}
+.ch.r .wrap{display:flex;justify-content:flex-end}
+.ch.c .wrap{display:flex;justify-content:center}
+.ch.tall{min-height:200vh}
+.panel{width:100%;max-width:520px;padding:clamp(20px,3vw,32px);border:1px solid var(--line);background:rgba(4,6,16,.68);backdrop-filter:blur(14px);box-shadow:0 0 80px rgba(94,242,255,.05);transform:translateY(40px);transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.panel.in{transform:none}
+.panel.wide{max-width:640px}
+.panel.free{background:none;border:0;backdrop-filter:none;box-shadow:none;padding:0}
+@media(max-width:760px){
+  .ch{align-items:flex-end;padding-block:80px 28px}
+  .ch.c,.ch.r{align-items:flex-end}
+  .ch.r .wrap,.ch.c .wrap{display:block}
+  .ch.tall{align-items:flex-start;padding-top:46vh}
+  .panel{max-width:none;background:rgba(4,6,16,.58)}
+  .console{height:112px}
+}
+.kicker{font-family:var(--f-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ignite);display:flex;align-items:center;gap:12px}
+.kicker::before{content:"";width:34px;height:1px;background:var(--ignite)}
+h2{font-family:var(--f-display);font-weight:500;font-size:clamp(26px,4vw,44px);line-height:1.06;letter-spacing:-.025em;margin:14px 0 0;text-wrap:balance}
+p.lead{color:var(--dim);margin:14px 0 0;font-size:16.5px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px}
+.chips span{font-family:var(--f-mono);font-size:12px;padding:5px 10px;border:1px solid var(--line);background:rgba(8,10,24,.6);transition:border-color .2s,color .2s}
+.chips span:hover{border-color:var(--cyan);color:var(--cyan)}
+.chips span i{font-style:normal;color:var(--dim);margin-left:6px}
+.sub{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-top:20px}
+.repo{display:block;margin-top:22px;padding:14px 16px;border:1px solid var(--line);text-decoration:none;background:rgba(8,10,24,.6);position:relative;overflow:hidden;transition:border-color .25s,transform .25s}
+.repo:hover{border-color:var(--cyan);transform:translateX(4px)}
+.repo b{display:block;font-family:var(--f-mono);font-weight:500;font-size:14px;overflow-wrap:anywhere}
+.repo small{display:block;color:var(--dim);font-size:13.5px;margin-top:2px}
+.repo em{font-style:normal;font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ignite);display:block;margin-top:8px}
+
+/* hero */
+.hero h1{font-family:var(--f-display);font-weight:800;font-size:clamp(46px,9vw,118px);line-height:.94;letter-spacing:-.035em;margin:16px 0 0}
+.hero h1 .l2{display:block;font-weight:300;background:linear-gradient(90deg,var(--ink),var(--cyan) 60%,var(--uv));-webkit-background-clip:text;background-clip:text;color:transparent}
+.role{font-family:var(--f-mono);font-size:clamp(14px,2vw,19px);margin-top:24px;min-height:1.6em}
+.role b{color:var(--cyan);font-weight:500}
+.caret{display:inline-block;width:.6ch;height:1.1em;background:var(--cyan);vertical-align:-.18em;margin-left:2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.tag{max-width:36ch;font-size:clamp(17px,2vw,21px);color:var(--dim);margin-top:14px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{font-family:var(--f-mono);font-size:13px;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;padding:14px 22px;border:1px solid var(--line);background:rgba(8,10,24,.55);backdrop-filter:blur(8px);display:inline-flex;gap:8px;align-items:center;transition:border-color .25s,box-shadow .25s,color .25s;cursor:pointer;color:var(--ink);font-family:var(--f-mono)}
+.btn:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 28px rgba(94,242,255,.25)}
+.btn.main{background:linear-gradient(135deg,var(--ignite),#ff4d6d);border-color:transparent;color:#1a0500;font-weight:500}
+.btn.main:hover{color:#1a0500;box-shadow:0 0 34px rgba(255,122,61,.55)}
+.btn:disabled{opacity:.6;cursor:default}
+.hint{margin-top:36px;font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:12px}
+.hint i{width:1px;height:34px;background:linear-gradient(var(--ignite),transparent);animation:drip 1.8s infinite}
+@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* pipeline */
+.track{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:22px}
+.track::before{content:"";position:absolute;left:10%;right:10%;top:19px;height:2px;background:var(--line)}
+.track i{position:absolute;left:10%;top:19px;height:2px;width:0;background:linear-gradient(90deg,var(--cyan),var(--ignite));box-shadow:0 0 16px var(--ignite);transition:width .6s ease}
+.stage{position:relative;text-align:center;font-family:var(--f-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--dim)}
+.stage .n{width:38px;height:38px;margin:0 auto 8px;border-radius:50%;border:1px solid var(--line);background:var(--void);display:grid;place-items:center;font-size:14px;transition:.35s}
+.stage.on{color:var(--ink)}
+.stage.on .n{border-color:var(--ignite);box-shadow:0 0 22px rgba(255,122,61,.6);color:var(--ignite);animation:pop .5s}
+@keyframes pop{50%{transform:scale(1.18)}}
+.stage.done .n{background:var(--ok);border-color:var(--ok);color:#03150d}
+.console{margin-top:20px;font-family:var(--f-mono);font-size:12.5px;line-height:1.7;background:#02030a;border:1px solid var(--line);padding:14px 16px;height:170px;overflow:hidden;color:#b5c0de}
+.console p{margin:0;white-space:pre-wrap;word-break:break-word}
+.console .ok{color:var(--ok)}.console .hot{color:var(--ignite)}
+.runrow{display:flex;gap:14px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.runrow small{font-family:var(--f-mono);font-size:11.5px;color:var(--dim)}
+
+/* log */
+.log{position:relative;margin-top:26px;padding-left:30px}
+.log::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.entry{position:relative;padding:0 0 30px}
+.entry::before{content:"";position:absolute;left:-30px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--void);border:2px solid var(--cyan);box-shadow:0 0 14px var(--cyan)}
+.entry time{font-family:var(--f-mono);font-size:12.5px;color:var(--ignite)}
+.entry h3{font-family:var(--f-display);font-weight:500;font-size:clamp(17px,2vw,21px);margin:4px 0 0;letter-spacing:-.01em}
+.entry .who{font-family:var(--f-mono);font-size:11.5px;color:var(--cyan);margin-top:3px;letter-spacing:.08em;text-transform:uppercase}
+.entry p{margin:8px 0 0;color:var(--dim);font-size:15.5px}
+.cert{margin-top:12px;padding:12px 16px;border:1px solid var(--line);background:rgba(6,8,20,.7);font-size:15px;position:relative;overflow:hidden;text-align:left}
+.cert::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(94,242,255,.22),transparent);animation:sheen 4.5s infinite}
+@keyframes sheen{60%,100%{left:130%}}
+.cert b{display:block;font-family:var(--f-mono);font-weight:400;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.ch.c h2{font-size:clamp(30px,5vw,58px);font-weight:800}
+
+
+/* flight recorder dashboard (GitHub-profile style) */
+.dash{margin-top:22px;border:1px solid var(--line);background:rgba(2,3,10,.72);padding:16px}
+.dash-top{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.ascii{margin:0;font-family:var(--f-mono);font-size:12px;line-height:1.1;color:var(--cyan);text-shadow:0 0 10px rgba(94,242,255,.5);animation:float 3.4s ease-in-out infinite}
+.ascii .fl{color:var(--ignite);text-shadow:0 0 12px var(--ignite);animation:flick .25s steps(2) infinite}
+@keyframes float{50%{transform:translateY(-5px)}}
+@keyframes flick{50%{opacity:.45}}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.stats div{border:1px solid var(--line);padding:10px 12px;background:rgba(8,12,28,.7)}
+.stats b{display:block;font-family:var(--f-display);font-weight:500;font-size:clamp(22px,3vw,30px);color:var(--ok);text-shadow:0 0 16px rgba(95,240,176,.45);font-variant-numeric:tabular-nums}
+.stats small{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;color:var(--dim);display:block;line-height:1.35;margin-top:2px}
+.gridwrap{overflow-x:auto;margin-top:16px;padding-bottom:4px}
+.cal{display:grid;grid-template-rows:repeat(7,10px);grid-auto-flow:column;grid-auto-columns:10px;gap:3px;width:max-content}
+.cal i{width:10px;height:10px;background:rgba(95,240,176,.07);border-radius:2px;transition:background .5s,box-shadow .5s,transform .5s}
+.cal i.on.l1{background:#0e6b43}.cal i.on.l2{background:#18a05f}.cal i.on.l3{background:#32d583}.cal i.on.l4{background:#7dffc0;box-shadow:0 0 10px #5ff0b0}
+.cal i.sc{background:rgba(94,242,255,.5)}
+.cal-foot{display:flex;justify-content:space-between;gap:10px;font-family:var(--f-mono);font-size:10.5px;color:var(--dim);margin-top:8px;flex-wrap:wrap;align-items:center}
+.cal-foot i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 2px;vertical-align:-1px;background:rgba(95,240,176,.12)}
+.cal-foot .lv1{background:#0e6b43}.cal-foot .lv2{background:#18a05f}.cal-foot .lv3{background:#32d583}.cal-foot .lv4{background:#7dffc0}
+.certs{display:grid;gap:10px;margin-top:16px}
+@media(max-width:760px){.console{height:104px}.panel{background:rgba(4,6,16,.6)}}
+@media(max-width:560px){.dash-top{grid-template-columns:1fr}.ascii{justify-self:center}}
+
+footer{padding-block:24px calc(30px + env(safe-area-inset-bottom,0px));font-family:var(--f-mono);font-size:12px;color:var(--dim);border-top:1px solid var(--line);background:rgba(3,4,10,.9)}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}.panel{transform:none}}
+</style>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div id="prog" aria-hidden="true"></div>
+
+<header class="top"><div class="wrap bar">
+  <a class="brand" href="#c0"><span class="dot"></span>PC // Launch</a>
+  <nav aria-label="Chapters"><a href="#c1">Frame</a><a href="#c2">Engines</a><a href="#c3">Guidance</a><a href="#c4">Pre-flight</a><a href="#c5">Flight</a><a href="#c6">Orbit</a></nav>
+</div></header>
+
+<aside class="hud" aria-hidden="true">
+  <div class="st" id="h-st">BLUEPRINT</div>
+  <b>ALT</b><span id="h-alt">0 km</span>
+  <b>VEL</b><span id="h-vel">0.0 km/s</span>
+  <b class="hide-m">COUNT</b><span class="hide-m" id="h-t">T-- standby</span>
+</aside>
+
+<main>
+  <section class="ch" id="c0"><div class="wrap"><div class="panel free hero in">
+    <div class="kicker">DevOps / SRE · Curitiba, Brazil</div>
+    <h1><span id="n1">Pedro</span><span class="l2" id="n2">Castro</span></h1>
+    <div class="role">&gt; <b id="typed"></b><span class="caret"></span></div>
+    <p class="tag">Scroll to build a rocket. Every part of it is something I do.</p>
+    <div class="cta">
+      <a class="btn main" href="https://github.com/PedroCastro0507" target="_blank" rel="noopener">GitHub ↗</a>
+      <a class="btn" href="https://www.linkedin.com/in/pedro-henrique-serrato-de-castro/" target="_blank" rel="noopener">LinkedIn ↗</a>
+    </div>
+    <div class="hint"><i></i>Scroll to assemble</div>
+  </div></div></section>
+
+  <section class="ch r" id="c1"><div class="wrap"><div class="panel">
+    <div class="kicker">01 · Frame</div>
+    <h2 data-scr>Everything starts with structure.</h2>
+    <p class="lead">Infrastructure as code gives the rocket a skeleton you can version, review and rebuild from scratch.</p>
+    <div class="chips"><span>Terraform<i>1 yr</i></span><span>Ansible<i>1 yr</i></span><span>Bash<i>2 yrs</i></span><span>Python<i>2 yrs</i></span><span>Git<i>2 yrs</i></span></div>
+    <a class="repo" href="https://github.com/PedroCastro0507/terraform-aws-network-baseline" target="_blank" rel="noopener"><b>terraform-aws-network-baseline</b><small>Reusable AWS VPC module with public and private subnets. fmt and validate run in CI.</small><em>Open repo ↗</em></a>
+  </div></div></section>
+
+  <section class="ch" id="c2"><div class="wrap"><div class="panel">
+    <div class="kicker">02 · Engines</div>
+    <h2 data-scr>Power that scales.</h2>
+    <p class="lead">Containers and Kubernetes provide the thrust. At Agrotis I replaced a legacy K3s setup with K8s and RKE2 clusters and introduced ArgoCD for GitOps deploys.</p>
+    <div class="chips"><span>Kubernetes<i>2 yrs</i></span><span>Docker<i>2 yrs</i></span><span>ArgoCD<i>1 yr</i></span><span>Rancher<i>1 yr</i></span><span>RKE2</span><span>Jenkins<i>2 yrs</i></span></div>
+    <a class="repo" href="https://github.com/PedroCastro0507/gitops-argocd-demo" target="_blank" rel="noopener"><b>gitops-argocd-demo</b><small>Kustomize base with dev and prod overlays and ArgoCD Applications, validated with kubeconform in CI.</small><em>Open repo ↗</em></a>
+  </div></div></section>
+
+  <section class="ch r" id="c3"><div class="wrap"><div class="panel">
+    <div class="kicker">03 · Guidance</div>
+    <h2 data-scr>Eyes on every system.</h2>
+    <p class="lead">Dashboards and alerts tell you what is happening in flight. I built them with Prometheus, Grafana and Graylog, across AWS and on-premises environments.</p>
+    <div class="sub">Observability</div>
+    <div class="chips" style="margin-top:10px"><span>Prometheus<i>2 yrs</i></span><span>Grafana<i>2 yrs</i></span><span>Datadog<i>2 yrs</i></span><span>Graylog<i>2 yrs</i></span><span>CloudWatch<i>1 yr</i></span><span>Kibana<i>1 yr</i></span></div>
+    <div class="sub">Clouds, 1 year each</div>
+    <div class="chips" style="margin-top:10px"><span>AWS</span><span>Azure</span><span>GCP</span><span>Oracle Cloud</span></div>
+  </div></div></section>
+
+  <section class="ch" id="c4"><div class="wrap"><div class="panel wide">
+    <div class="kicker">04 · Pre-flight</div>
+    <h2 data-scr>Nothing flies unchecked.</h2>
+    <p class="lead">Build, verify, deploy, observe. Run the simulated pipeline and the rocket ignites.</p>
+    <div class="track" id="track"><i id="fill"></i>
+      <div class="stage"><div class="n">1</div>Commit</div>
+      <div class="stage"><div class="n">2</div>Build</div>
+      <div class="stage"><div class="n">3</div>Verify</div>
+      <div class="stage"><div class="n">4</div>Deploy</div>
+      <div class="stage"><div class="n">5</div>Observe</div>
+    </div>
+    <div class="console" id="con" aria-live="polite"><p>$ standing by. press "Run launch sequence".</p></div>
+    <div class="runrow"><button class="btn main" id="run" type="button">▶ Run launch sequence</button><small>Simulation only. Nothing is deployed.</small></div>
+    <a class="repo" href="https://github.com/PedroCastro0507/DevOps" target="_blank" rel="noopener"><b>DevOps</b><small>Node.js API with a GitHub Actions pipeline, smoke tests and a Docker image build.</small><em>Open repo ↗</em></a>
+  </div></div></section>
+
+  <section class="ch r tall" id="c5"><div class="wrap"><div class="panel wide">
+    <div class="kicker">05 · Flight · Mission log</div>
+    <h2 data-scr>Where I have flown.</h2>
+    <div class="log">
+      <div class="entry"><time>2026 – now</time><h3>Independent DevOps</h3><div class="who">Confidential client projects</div><p>Infrastructure and automation for private clients, under confidentiality. Building public IaC and GitOps projects to show how I work.</p></div>
+      <div class="entry"><time>Jun – Dec 2025</time><h3>DevOps Analyst (Junior)</h3><div class="who">Agrotis</div><p>Replaced a legacy K3s setup with Kubernetes (K8s and RKE2) clusters, introduced ArgoCD for GitOps deploys and built CI/CD pipelines. Automated routines with Bash and Ansible, tuned memory on deployments, managed Kubernetes Secrets, and built Prometheus, Grafana and Graylog dashboards and alerts. Hybrid AWS and on-premises.</p></div>
+      <div class="entry"><time>Sep 2024 – May 2025</time><h3>DevOps Intern</h3><div class="who">Mercafacil</div><p>Infrastructure and support: servers, LAN, documentation, system migrations and network upgrades, plus automation projects with Docker, Terraform and GCP.</p></div>
+      <div class="entry"><time>2024 – 2026</time><h3>B.Sc. Computer Science</h3><div class="who">UniCuritiba</div><p>Software foundations behind the infrastructure work.</p></div>
+    </div>
+  </div></div></section>
+
+  <section class="ch r0" id="c6"><div class="wrap"><div class="panel wide">
+    <div class="kicker">06 · Orbit · Flight recorder</div>
+    <h2 data-scr>In orbit. Let's talk.</h2>
+    <p class="lead">Open to conversations about DevOps, SRE and AI platforms. Below is my real GitHub activity, snapshot of 7 Oct 2026.</p>
+    <div class="dash" id="dash">
+      <div class="dash-top">
+        <pre class="ascii" aria-hidden="true">     /\
+    /  \
+   | () |
+   |    |
+   |    |
+  /|    |\
+ /_|____|_\
+    /||\
+   /_||_\
+    <span class="fl">vVVv</span>
+     <span class="fl">vv</span></pre>
+        <div class="stats">
+          <div><b data-n="82">0</b><small>contributions, last 12 months</small></div>
+          <div><b data-n="27">0</b><small>on the busiest day (7 Oct)</small></div>
+          <div><b data-n="15">0</b><small>active days</small></div>
+        </div>
+      </div>
+      <div class="gridwrap"><div class="cal" id="cal" role="img" aria-label="GitHub contribution graph, last 12 months, 82 contributions"></div></div>
+      <div class="cal-foot"><span>Oct 2025</span><span>less <i class="lv0"></i><i class="lv1"></i><i class="lv2"></i><i class="lv3"></i><i class="lv4"></i> more</span><span>Oct 2026</span></div>
+    </div>
+    <div class="certs">
+      <div class="cert"><b>Certification</b>Oracle Cloud Infrastructure Foundations Associate · 2025</div>
+      <div class="cert"><b>Certification</b>Datadog Fundamentals</div>
+      <div class="cert"><b>Languages</b>Portuguese (native) · English and Spanish (intermediate)</div>
+    </div>
+    <div class="cta">
+      <a class="btn main" href="https://www.linkedin.com/in/pedro-henrique-serrato-de-castro/" target="_blank" rel="noopener">Message on LinkedIn ↗</a>
+      <a class="btn" href="https://github.com/PedroCastro0507" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </div></div></section>
+</main>
+<footer><div class="wrap"><span>© Pedro Castro</span><span>Curitiba, Brazil · built with Claude</span></div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sy=0,igniteFlag=0;
+  var sections=[].slice.call(document.querySelectorAll('.ch')),anchors=[];
+  function calc(){anchors=sections.map(function(s){var r=s.getBoundingClientRect();return r.top+scrollY+r.height/2-innerHeight/2})}
+  function chapter(s){
+    if(!anchors.length||s<=anchors[0])return 0;
+    for(var i=0;i<anchors.length-1;i++){if(s<anchors[i+1])return i+(s-anchors[i])/(anchors[i+1]-anchors[i])}
+    return anchors.length-1;
+  }
+  function cl(v,a,b){return Math.max(a,Math.min(b,v))}
+  function sm(v,a,b){var t=cl((v-a)/(b-a),0,1);return t*t*(3-2*t)}
+  function kf(arr,c){var i=Math.min(arr.length-2,Math.floor(c)),f=cl(c-i,0,1);f=f*f*(3-2*f);return arr[i]+(arr[i+1]-arr[i])*f}
+
+  /* ---------- scene ---------- */
+  var cv=document.getElementById('gl'),renderer=null,THREE=window.THREE;
+  var scene,camera,R,parts=[],flameG,flames=[],pad,planetG,planetMats=[],atmU,streaks,stars,spark,smoke,lightF,grid,bg1,bg2;
+  var wide=function(){return innerWidth>760};
+  if(THREE){try{
+    renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.6));
+    scene=new THREE.Scene();bg1=new THREE.Color(0x0d1740);bg2=new THREE.Color(0x03040a);scene.background=new THREE.Color(0x03040a);scene.fog=new THREE.FogExp2(0x03040a,.004);
+    camera=new THREE.PerspectiveCamera(50,1,.1,900);
+    scene.add(new THREE.AmbientLight(0x8fa0ff,.6));
+    var d1=new THREE.DirectionalLight(0xffd6b8,1.5);d1.position.set(7,9,8);scene.add(d1);
+    var d2=new THREE.DirectionalLight(0x6aa8ff,.9);d2.position.set(-8,2,-5);scene.add(d2);
+    lightF=new THREE.PointLight(0xff7a3d,0,22);scene.add(lightF);
+
+    R=new THREE.Group();scene.add(R);
+    var cBody=0xe9eeff,cDark=0x1b2347,cOr=0xff7a3d,cMet=0x5d6685;
+    function solid(c,e){return new THREE.MeshStandardMaterial({color:c,metalness:.35,roughness:.42,transparent:true,opacity:0,emissive:e||0x000000})}
+    function part(name,s,e,off,rot){
+      var g=new THREE.Group();R.add(g);
+      var p={g:g,s:s,e:e,off:off,rot:rot,solids:[],lines:[],name:name};parts.push(p);return p;
+    }
+    function add(p,geo,mat,x,y,z,rx,ry,rz){
+      var m=new THREE.Mesh(geo,mat);m.position.set(x||0,y||0,z||0);m.rotation.set(rx||0,ry||0,rz||0);p.g.add(m);p.solids.push(m);
+      var l=new THREE.LineSegments(new THREE.EdgesGeometry(geo,28),new THREE.LineBasicMaterial({color:0x5ef2ff,transparent:true,opacity:1}));
+      l.position.copy(m.position);l.rotation.copy(m.rotation);p.g.add(l);p.lines.push(l);return m;
+    }
+    var V=function(x,y,z){return new THREE.Vector3(x,y,z)};
+    // frame
+    var pLow=part('low',.15,.85,V(0,-7,2),V(.6,0,.4));
+    add(pLow,new THREE.CylinderGeometry(1,1.08,3,36),solid(cBody),0,-1.5,0);
+    add(pLow,new THREE.CylinderGeometry(1.09,1.09,.28,36),solid(cOr),0,-2.55,0);
+    var pUp=part('up',.45,1.1,V(0,6,-1),V(-.5,0,.5));
+    add(pUp,new THREE.CylinderGeometry(.95,1,3,36),solid(cBody),0,1.5,0);
+    add(pUp,new THREE.CylinderGeometry(1.01,1.01,.22,36),solid(cDark),0,.7,0);
+    add(pUp,new THREE.CylinderGeometry(1.01,1.01,.22,36),solid(cOr),0,2.6,0);
+    var fs=new THREE.Shape();fs.moveTo(1,-.6);fs.lineTo(2.6,-2.5);fs.lineTo(2.6,-3.4);fs.lineTo(1,-3.2);fs.closePath();
+    var fg=new THREE.ExtrudeGeometry(fs,{depth:.14,bevelEnabled:false});fg.translate(0,0,-.07);
+    for(var k=0;k<4;k++){
+      var a=k*Math.PI/2,pf=part('fin'+k,.7+k*.08,1.3+k*.08,V(Math.cos(a)*7,-2+(k%2)*3,Math.sin(a)*7),V(1,1,0));
+      var fm=add(pf,fg,solid(cOr),0,0,0);
+      pf.g.rotation.y=0;pf.base=a;
+      fm.parent.userData.ang=a;
+    }
+    // engines
+    var pN=[];
+    [[0,0],[-.72,0],[.72,0]].forEach(function(o,i){
+      var pn=part('noz'+i,1.5+i*.1,2.2+i*.1,V(o[0]*3,-8,i%2?3:-3),V(.5,.3,0));
+      add(pn,new THREE.CylinderGeometry(.24,.42,.85,22),solid(cMet),o[0],-3.38,0);
+      add(pn,new THREE.CylinderGeometry(.3,.3,.18,22),solid(cDark),o[0],-2.95,0);
+      pN.push(pn);
+    });
+    var boosters=[];
+    [-1,1].forEach(function(sd,i){
+      var pb=part('boost'+i,1.7+i*.1,2.35+i*.1,V(sd*9,-1,i?-3:3),V(0,0,sd*.6));
+      add(pb,new THREE.CylinderGeometry(.42,.42,4.2,26),solid(cBody),sd*1.6,-1,0);
+      add(pb,new THREE.ConeGeometry(.42,.95,26),solid(cOr),sd*1.6,1.56,0);
+      add(pb,new THREE.CylinderGeometry(.43,.43,.2,26),solid(cDark),sd*1.6,-2.2,0);
+      add(pb,new THREE.CylinderGeometry(.18,.3,.5,16),solid(cMet),sd*1.6,-3.35,0);
+      pb.sd=sd;pb.isBooster=true;boosters.push(pb);
+    });
+    // guidance
+    var pNose=part('nose',2.5,3.05,V(0,9,-2),V(-.4,.8,0));
+    add(pNose,new THREE.ConeGeometry(.95,2.5,36),solid(cBody),0,4.25,0);
+    var pWin=part('win',2.75,3.2,V(3,5,5),V(0,1,0));
+    add(pWin,new THREE.TorusGeometry(.34,.07,14,32),solid(cMet),0,1.75,.99);
+    add(pWin,new THREE.CircleGeometry(.3,32),new THREE.MeshStandardMaterial({color:0x5ef2ff,emissive:0x2ab8d8,emissiveIntensity:.9,transparent:true,opacity:0}),0,1.75,.985);
+    var pRing=part('ring',2.95,3.4,V(-4,3,4),V(1.2,0,0));
+    add(pRing,new THREE.TorusGeometry(1.15,.045,10,60),solid(cOr,0x552200),0,3.05,0,Math.PI/2,0,0);
+    add(pRing,new THREE.CylinderGeometry(.03,.03,1.1,8),solid(cMet),0,5.9,0);
+    add(pRing,new THREE.SphereGeometry(.09,12,10),solid(cOr,0x552200),0,6.5,0);
+
+    // flames
+    flameG=new THREE.Group();R.add(flameG);
+    function flame(r,h,col,x,parent){
+      var m=new THREE.Mesh(new THREE.ConeGeometry(r,h,18,1,true),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
+      m.rotation.x=Math.PI;m.position.set(x,-3.8-h/2,0);m.userData.h=h;(parent||flameG).add(m);flames.push(m);return m;
+    }
+    flame(.85,4.2,0xff7a3d,0);flame(.5,3.3,0xffd9a0,0);flame(.28,2.6,0x9fe8ff,0);
+    boosters.forEach(function(pb){var f=flame(.4,2.6,0xff7a3d,pb.sd*1.6,pb.g);f.position.y=-3.6-1.3;});
+
+    // pad
+    pad=new THREE.Group();scene.add(pad);
+    var padMat=new THREE.MeshStandardMaterial({color:0x151b3a,metalness:.5,roughness:.6,transparent:true,opacity:0});
+    var plat=new THREE.Mesh(new THREE.CylinderGeometry(3.4,3.8,.4,40),padMat);plat.position.y=-4.15;pad.add(plat);
+    var lm=new THREE.LineBasicMaterial({color:0x5ef2ff,transparent:true,opacity:0});
+    pad.userData.lm=lm;pad.userData.pm=padMat;
+    var tw=new THREE.BoxGeometry(.6,11,.6);var twm=new THREE.LineSegments(new THREE.EdgesGeometry(tw),lm);twm.position.set(-3.6,1.3,0);pad.add(twm);
+    for(var yy=-3;yy<=6;yy+=1.5){var cr=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(.6,.05,.6)),lm);cr.position.set(-3.6,yy,0);pad.add(cr);}
+    var arm=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(2.4,.28,.28)),lm);arm.position.set(-2.4,2.6,0);pad.add(arm);
+    grid=new THREE.GridHelper(80,40,0x5ef2ff,0x1a2a55);grid.position.y=-4.3;grid.material.transparent=true;grid.material.opacity=.0;scene.add(grid);
+
+    // planet
+    var PR=110;planetG=new THREE.Group();planetG.position.set(0,-4.35-PR,0);scene.add(planetG);
+    var pcore=new THREE.Mesh(new THREE.SphereGeometry(PR,64,48),new THREE.MeshBasicMaterial({color:0x050818,transparent:true,opacity:0}));planetG.add(pcore);planetMats.push(pcore.material);
+    var pwire=new THREE.Mesh(new THREE.IcosahedronGeometry(PR*1.002,4),new THREE.MeshBasicMaterial({color:0x5ef2ff,wireframe:true,transparent:true,opacity:0}));planetG.add(pwire);planetMats.push(pwire.material);pwire.userData.max=.22;pcore.userData.max=1;
+    atmU={a:{value:0}};
+    var atm=new THREE.Mesh(new THREE.SphereGeometry(PR*1.07,64,48),new THREE.ShaderMaterial({uniforms:atmU,transparent:true,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false,
+      vertexShader:'varying vec3 n;void main(){n=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+      fragmentShader:'varying vec3 n;uniform float a;void main(){float i=pow(.7-dot(n,vec3(0.,0.,1.)),3.);gl_FragColor=vec4(.4,.55,1.,1.)*i*.8*a;}'}));planetG.add(atm);
+    var lp=[],lc=[],u0=Math.cos(.5);for(var q=0;q<2200;q++){var u=u0+Math.random()*(1-u0),an=Math.random()*6.283,rr=Math.sqrt(1-u*u);lp.push(Math.cos(an)*rr*PR*1.003,u*PR*1.003,Math.sin(an)*rr*PR*1.003);var cc=Math.random()<.2?[1,.48,.24]:[.37,.95,1];lc.push(cc[0],cc[1],cc[2]);}
+    var lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.Float32BufferAttribute(lp,3));lg.setAttribute('color',new THREE.Float32BufferAttribute(lc,3));
+    var lights=new THREE.Points(lg,new THREE.PointsMaterial({size:.09,vertexColors:true,transparent:true,opacity:0}));planetG.add(lights);planetMats.push(lights.material);lights.userData.max=.9;
+
+    // stars
+    function field(n,rmin,rmax,size,op){
+      var p=[],c=[];for(var i=0;i<n;i++){var u=Math.random()*2-1,a=Math.random()*6.283,r=Math.sqrt(1-u*u),Rr=rmin+Math.random()*(rmax-rmin);p.push(Math.cos(a)*r*Rr,u*Rr,Math.sin(a)*r*Rr);var t=Math.random();c.push(.65+t*.35,.75+t*.2,1)}
+      var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('color',new THREE.Float32BufferAttribute(c,3));
+      return new THREE.Points(g,new THREE.PointsMaterial({size:size,vertexColors:true,transparent:true,opacity:op,fog:false}));
+    }
+    stars=field(3200,300,800,1.6,.95);scene.add(stars);
+    // speed streaks
+    var sp=[];streaks=[];for(var s=0;s<140;s++){var an2=Math.random()*6.283,rd=4+Math.random()*22;streaks.push({x:Math.cos(an2)*rd,z:Math.sin(an2)*rd-4,ph:Math.random()});sp.push(0,0,0,0,0,0)}
+    var sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(sp,3));
+    var sl=new THREE.LineSegments(sg,new THREE.LineBasicMaterial({color:0xbfe9ff,transparent:true,opacity:0,fog:false}));sl.frustumCulled=false;scene.add(sl);streaks.line=sl;
+
+    // particle pools
+    function tex(){var c=document.createElement('canvas');c.width=c.height=64;var x=c.getContext('2d'),g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.4,'rgba(255,255,255,.4)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)}
+    var T=tex();
+    function pool(n,size,blend,op){
+      var o={n:n,pos:new Float32Array(n*3),vel:new Float32Array(n*3),life:new Float32Array(n),max:new Float32Array(n),col:new Float32Array(n*3),i:0};
+      for(var i=0;i<n;i++){o.pos[i*3+1]=-9999}
+      var g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(o.pos,3));g.setAttribute('color',new THREE.BufferAttribute(o.col,3));
+      o.pts=new THREE.Points(g,new THREE.PointsMaterial({size:size,map:T,vertexColors:true,transparent:true,opacity:op,blending:blend,depthWrite:false,sizeAttenuation:true,fog:false}));
+      o.pts.frustumCulled=false;scene.add(o.pts);return o;
+    }
+    spark=pool(700,1.5,THREE.AdditiveBlending,.95);smoke=pool(260,4.6,THREE.NormalBlending,.35);
+  }catch(e){renderer=null;console.error(e)}}
+
+  function resize(){if(!renderer)return;var w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();calc()}
+  var _ro=window.ResizeObserver?new ResizeObserver(function(){calc()}):null;if(_ro)_ro.observe(document.body);
+  addEventListener('resize',resize);addEventListener('load',function(){calc();resize()});
+  if(renderer)resize();else calc();
+
+  function emit(o,wx,wy,wz,vx,vy,vz,life,r,g,b){
+    var i=o.i;o.i=(o.i+1)%o.n;
+    o.pos[i*3]=wx;o.pos[i*3+1]=wy;o.pos[i*3+2]=wz;o.vel[i*3]=vx;o.vel[i*3+1]=vy;o.vel[i*3+2]=vz;o.life[i]=life;o.max[i]=life;o.col[i*3]=r;o.col[i*3+1]=g;o.col[i*3+2]=b;
+  }
+  function stepPool(o,dt,drag,fadeCol){
+    for(var i=0;i<o.n;i++){
+      if(o.life[i]>0){
+        o.life[i]-=dt;var k=Math.max(0,o.life[i]/o.max[i]);
+        o.pos[i*3]+=o.vel[i*3]*dt;o.pos[i*3+1]+=o.vel[i*3+1]*dt;o.pos[i*3+2]+=o.vel[i*3+2]*dt;
+        o.vel[i*3]*=drag;o.vel[i*3+1]*=drag;o.vel[i*3+2]*=drag;
+        if(fadeCol){o.col[i*3]=fadeCol[0]*k;o.col[i*3+1]=fadeCol[1]*k*(.5+.5*k);o.col[i*3+2]=fadeCol[2]*k*k}
+        else{var v=.55*k;o.col[i*3]=v;o.col[i*3+1]=v;o.col[i*3+2]=v*1.08}
+        if(o.life[i]<=0)o.pos[i*3+1]=-9999;
+      }
+    }
+    o.pts.geometry.attributes.position.needsUpdate=true;o.pts.geometry.attributes.color.needsUpdate=true;
+  }
+
+  /* ---------- HUD ---------- */
+  var hSt=document.getElementById('h-st'),hAlt=document.getElementById('h-alt'),hVel=document.getElementById('h-vel'),hT=document.getElementById('h-t');
+  var stNames=['BLUEPRINT','FRAME','ENGINES','GUIDANCE','PRE-FLIGHT','ASCENT','ORBIT'];
+  var navs=[].slice.call(document.querySelectorAll('nav a'));
+
+  /* ---------- frame ---------- */
+  var cs=0,prevAlt=0,spd=0,t0=performance.now(),tm=0,V3=THREE?new THREE.Vector3():null,sepSound=0;
+  var kAng=[.55,-.5,.5,-.5,.35,-.35,0],kDist=[19,15.5,14.5,14,17,22,30],kH=[2.5,1.5,3,2.5,1,1.5,4],kLY=[0,-.5,1.5,1.5,-.4,0,-1];
+  var kSide=[1,-1,1,-1,1,-1,1];
+  var prog=document.getElementById('prog'),lastHud=0;
+  function frame(now){
+    var dt=Math.min(.05,(now-t0)/1000);t0=now;tm+=dt;
+    var target=chapter(sy);cs+=(target-cs)*(reduce?1:Math.min(1,dt*5.5));var c=cs;
+    var ig=igniteFlag;
+    var a=cl((c-4.35)/1.65,0,1);var alt=90*Math.pow(a,1.8);
+    spd+=((Math.abs(alt-prevAlt)/Math.max(dt,.001))-spd)*.12;prevAlt=alt;
+    var thrust=Math.max(sm(c,4.3,4.6),ig*.5);
+    if(renderer){
+      // assemble
+      parts.forEach(function(p,i){
+        var k=cl((c-p.s)/(p.e-p.s),0,1);k=k*k*(3-2*k);
+        var fl=(1-k)*Math.sin(tm*1.1+i)*.25;
+        p.g.position.set(p.off.x*(1-k),p.off.y*(1-k)+fl,p.off.z*(1-k));
+        p.g.rotation.set(p.rot.x*(1-k),p.rot.y*(1-k)+(p.base!=null?p.base:0),p.rot.z*(1-k));
+        var op=k,sep=0;
+        if(p.isBooster){sep=sm(c,5.25,5.75);var sd=p.sd;p.g.position.x+=sd*sep*sep*10;p.g.position.y-=sep*sep*16;p.g.rotation.z+=sd*sep*1.4;op=k*(1-cl(sep*1.1,0,1));p.g.visible=sep<.98}
+        p.solids.forEach(function(m){m.material.opacity=op*(m.material.userData&&m.material.userData.cap?1:1)});
+        p.lines.forEach(function(l){l.material.opacity=Math.max(0,(.95-.72*k)*(p.isBooster?(1-sep):1))});
+      });
+      // booster flames follow thrust inside their groups
+      flames.forEach(function(f,i){
+        f.material.opacity=thrust*(i<3?.8:.7)*(.85+.15*Math.sin(tm*40+i*2));
+        f.scale.set(1,thrust*(.9+.25*Math.sin(tm*31+i)),1);
+        var h=f.userData.h;f.position.y=(i<3?-3.8:-3.6)-(h*f.scale.y)/2;
+      });
+      lightF.intensity=thrust*3.2;lightF.position.copy(R.localToWorld(V3.set(0,-4.6,1.5)));
+      // rocket motion
+      R.position.set((ig?(Math.random()-.5)*.05:0)+thrust*(Math.random()-.5)*.04,alt+(c<4.3?Math.sin(tm*1.2)*.08:0),0);
+      var pitch=sm(c,5.75,6);R.rotation.z=-pitch*1.15;R.rotation.x=pitch*.1;
+      // pad / planet / grid / sky
+      var padA=sm(c,3.1,3.9)*(1-sm(alt,6,26));
+      pad.visible=padA>.01;pad.userData.pm.opacity=padA;pad.userData.lm.opacity=padA*.85;
+      grid.material.opacity=.32*(1-sm(c,3,3.8))*(1-sm(alt,0,5));
+      var pA=sm(c,3.0,3.9);planetG.visible=pA>.01;
+      planetMats.forEach(function(m){m.opacity=pA*(m.userData&&m.userData.max||1)});
+      planetMats[0].opacity=pA;planetMats[1].opacity=pA*.22;planetMats[2].opacity=pA*.9;atmU.a.value=pA;
+      var sky=1-sm(alt,0,45);var cl2=scene.background;cl2.copy(bg2).lerp(bg1,sky*sm(c,3,4)*.9);scene.fog.color.copy(cl2);
+      scene.fog.density=.004*(1-sm(alt,10,60));
+      // camera
+      var ang=kf(kAng,c),dist=kf(kDist,c)*(wide()?1:1.85),h=kf(kH,c),ly=kf(kLY,c)-(wide()?0:7.4),side=wide()?kf(kSide,c):0;
+      var Xs=Math.tan(25*Math.PI/180)*dist*camera.aspect*.42;
+      var rx=Math.cos(ang),rz=-Math.sin(ang);
+      var lx=-rx*side*Xs,lz=-rz*side*Xs;
+      var shake=thrust*.04*(1+ig);
+      var lookY=R.position.y+ly;
+      camera.position.set(lx+Math.sin(ang)*dist+(Math.random()-.5)*shake,lookY+h+(Math.random()-.5)*shake,lz+Math.cos(ang)*dist);
+      camera.lookAt(lx,lookY,lz);
+      camera.fov=50+Math.min(spd*.02,10);camera.updateProjectionMatrix();
+      stars.position.copy(camera.position);stars.rotation.y+=dt*.004;
+      // streaks
+      var L=cl(spd*.012,0,9),sp=streaks.line.geometry.attributes.position.array,span=60;
+      for(var i=0;i<streaks.length;i++){
+        var s=streaks[i],y=((s.ph*span-alt*.8)%span+span)%span-span/2+camera.position.y;
+        sp[i*6]=s.x+camera.position.x;sp[i*6+1]=y;sp[i*6+2]=s.z+camera.position.z;sp[i*6+3]=sp[i*6];sp[i*6+4]=y+L;sp[i*6+5]=sp[i*6+2];
+      }
+      streaks.line.geometry.attributes.position.needsUpdate=true;streaks.line.material.opacity=cl(spd/60,0,.55);
+      // particles
+      if(!reduce){
+        var rate=thrust*(dt*60)*7;var cnt=Math.floor(rate)+(Math.random()<rate%1?1:0);
+        for(var j=0;j<cnt;j++){
+          var o=[[0,-3.85,0],[-.72,-3.85,0],[.72,-3.85,0]][j%3];
+          var w=R.localToWorld(V3.set(o[0],o[1],o[2]).clone());
+          var dir=V3.set(0,-1,0).applyQuaternion(R.quaternion).clone();
+          var sp2=7+Math.random()*5;
+          emit(spark,w.x,w.y,w.z,dir.x*sp2+(Math.random()-.5)*1.8,dir.y*sp2+(Math.random()-.5)*1.8,dir.z*sp2+(Math.random()-.5)*1.8,.6+Math.random()*.5,1,.62+Math.random()*.2,.3);
+        }
+        if(thrust>.2&&alt<16){
+          var sc=Math.floor(thrust*dt*60*1.2)+(Math.random()<.5?1:0);
+          for(var m=0;m<sc;m++){var an=Math.random()*6.283,sv=3+Math.random()*5;emit(smoke,Math.cos(an)*1.2,-4+Math.random()*.4,Math.sin(an)*1.2,Math.cos(an)*sv,1+Math.random()*1.4,Math.sin(an)*sv,2.2+Math.random(),.5,.5,.55)}
+        }
+        stepPool(spark,dt,.985,[1,.62,.3]);stepPool(smoke,dt,.965,null);
+      }
+      renderer.render(scene,camera);
+    }
+    prog.style.transform='scaleX('+cl(sy/Math.max(1,document.documentElement.scrollHeight-innerHeight),0,1)+')';
+    // hud + nav
+    if(now-lastHud>80){
+      lastHud=now;
+      var idx=Math.round(cl(c,0,6));hSt.textContent=(c>4.4?'ASCENT':stNames[idx])+(c>5.25&&c<5.8?' · STAGE SEP':'');
+      hAlt.textContent=Math.round(alt/90*400)+' km';hVel.textContent=(a*7.8).toFixed(1)+' km/s';
+      if(c<3.9)hT.textContent='T-- standby';else if(c<4.35)hT.textContent='T-'+Math.max(0,Math.ceil((4.35-c)/.45*10))+' s';else hT.textContent='T+ '+Math.round((c-4.35)*60)+' s';
+      navs.forEach(function(n,i){n.classList.toggle('on',Math.round(cl(c,0,6))===i+1)});
+    }
+    if(!reduce)requestAnimationFrame(frame);
+  }
+  addEventListener('scroll',function(){sy=scrollY;if(reduce)frame(performance.now())},{passive:true});
+  sy=scrollY;calc();
+  if(reduce){cs=chapter(sy);frame(performance.now())}else requestAnimationFrame(frame);
+
+  /* ---------- text effects ---------- */
+  var CH='!<>-_/[]{}=+*^?#01';
+  function scramble(el,final,dur){
+    if(reduce){el.textContent=final;return}
+    var st=performance.now();
+    (function s(now){var k=Math.min(1,(now-st)/dur),out='';for(var i=0;i<final.length;i++)out+=(final[i]===' '||i<final.length*k-1)?final[i]:CH[Math.random()*CH.length|0];el.textContent=out;if(k<1)requestAnimationFrame(s);else el.textContent=final})(st);
+  }
+  scramble(document.getElementById('n1'),'Pedro',900);setTimeout(function(){scramble(document.getElementById('n2'),'Castro',1000)},250);
+  var roles=['DevOps engineer','Site reliability','Kubernetes and GitOps','Infrastructure as code','CI/CD pipelines','Observability'],ri=0,ci=0,del=false,tp=document.getElementById('typed');
+  (function type(){
+    if(reduce){tp.textContent=roles[0];return}
+    var w=roles[ri];tp.textContent=w.slice(0,ci);
+    if(!del&&ci<w.length){ci++;setTimeout(type,70)}else if(!del){del=true;setTimeout(type,1400)}else if(ci>0){ci--;setTimeout(type,35)}else{del=false;ri=(ri+1)%roles.length;setTimeout(type,250)}
+  })();
+  var panels=[].slice.call(document.querySelectorAll('.panel'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');var h=e.target.querySelector('[data-scr]');if(h&&!h.dataset.f){h.dataset.f=h.textContent;scramble(h,h.dataset.f,700)}io.unobserve(e.target)}})},{threshold:.15});
+    panels.forEach(function(p){io.observe(p)});
+  }else panels.forEach(function(p){p.classList.add('in')});
+
+
+  /* ---------- flight recorder ---------- */
+  (function(){
+    var data={"2026-04-13":[1,1],"2026-09-07":[1,1],"2026-09-28":[1,1],"2026-10-05":[1,1],"2026-06-30":[3,1],"2026-09-29":[1,1],"2026-10-06":[10,2],"2026-09-02":[5,1],"2026-10-07":[27,4],"2025-10-30":[7,2],"2025-11-06":[3,1],"2026-04-02":[2,1],"2026-10-01":[2,1],"2025-11-07":[4,1],"2026-10-02":[14,3]};
+    var cal=document.getElementById('cal'),start=Date.UTC(2025,9,5),end=Date.UTC(2026,9,7),cells=[];
+    for(var col=0;col<53;col++)for(var row=0;row<7;row++){
+      var t=start+(col*7+row)*864e5;if(t>end)continue;
+      var d=new Date(t).toISOString().slice(0,10),i=document.createElement('i'),rec=data[d];
+      i.dataset.l=rec?rec[1]:0;i.dataset.col=col;if(rec)i.title=rec[0]+' contribution'+(rec[0]>1?'s':'')+' on '+d;
+      cal.appendChild(i);cells.push(i);
+    }
+    var done=false;
+    function light(){
+      if(done)return;done=true;
+      cells.forEach(function(c){var delay=reduce?0:c.dataset.col*22+Math.random()*120;setTimeout(function(){c.classList.add('sc');setTimeout(function(){c.classList.remove('sc');var l=+c.dataset.l;if(l>0)c.classList.add('on','l'+l)},reduce?0:160)},delay)});
+      [].forEach.call(document.querySelectorAll('.stats b'),function(b){
+        var n=+b.dataset.n,st=performance.now(),dur=reduce?1:1500;
+        (function k(now){var p=Math.min(1,(now-st)/dur);b.textContent=Math.round(n*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(k)})(st);
+      });
+    }
+    if('IntersectionObserver' in window){var o=new IntersectionObserver(function(es){if(es[0].isIntersecting){light();o.disconnect()}},{threshold:.2});o.observe(document.getElementById('dash'))}else light();
+  })();
+
+  /* ---------- pipeline ---------- */
+  var script=[
+    ['$ git push origin main','',0],['> trigger: push to main','',0],
+    ['> build: docker build --cache-from registry/app:latest','',1],['  image built','ok',1],
+    ['> verify: unit tests, lint, image scan','',2],['  all checks passed','ok',2],
+    ['> deploy: manifest change detected, argocd sync','',3],['  rollout healthy, 3/3 replicas ready','ok',3],
+    ['> observe: dashboards green, alerts armed','',4],['  T-0 ignition','hot',4]
+  ];
+  var btn=document.getElementById('run'),con=document.getElementById('con'),fill=document.getElementById('fill'),stages=[].slice.call(document.querySelectorAll('.stage')),running=false;
+  function setStage(n,fin){stages.forEach(function(s,i){s.classList.toggle('done',i<n||(fin&&i<=n));s.classList.toggle('on',!fin&&i===n)});fill.style.width=(fin?80:Math.max(0,n)*20)+'%'}
+  function line(t,c){var p=document.createElement('p');if(c)p.className=c;p.textContent=t;con.appendChild(p);con.scrollTop=con.scrollHeight}
+  btn.addEventListener('click',function(){
+    if(running)return;running=true;btn.disabled=true;btn.textContent='Running…';con.innerHTML='';setStage(-1);
+    var i=0,delay=reduce?30:600;
+    (function step(){
+      if(i>=script.length){
+        setStage(4,true);btn.textContent='Ignition…';igniteFlag=1;
+        setTimeout(function(){
+          var s5=document.getElementById('c5').getBoundingClientRect();
+          window.scrollTo({top:Math.max(0,scrollY+s5.top-innerHeight*.15),behavior:reduce?'auto':'smooth'});
+          setTimeout(function(){igniteFlag=0;btn.disabled=false;btn.textContent='↻ Run again';running=false},2400);
+        },reduce?0:1400);
+        return;
+      }
+      var l=script[i++];setStage(l[2]);line(l[0],l[1]);setTimeout(step,delay);
+    })();
+  });
+})();
+</script>
+</body>
+</html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pedro Castro | DevOps / SRE</title>
 <meta name="description" content="DevOps / SRE engineer working with Kubernetes, Terraform, CI/CD and observability. Based in Curitiba, Brazil.">
